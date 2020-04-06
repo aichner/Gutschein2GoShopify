@@ -1,0 +1,31 @@
+// seconds
+const durationRefreshToken = 129600; // 90 d‬
+const durationToken = 900; // 15 min
+
+function centralErrorHandler(err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).send(err);
+    } else if (err.message == 'Not allowed by CORS') {
+        res.status(401).send('Not allowed from this origin.');
+    } else {
+        next(err);
+    }
+}
+
+var whitelist = ['https://gutschein2go.at'];
+var corsOptions = {
+    origin: function (origin, callback) {
+        console.log('Request from origin: ' + origin);
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+
+module.exports.centralErrorHandler = centralErrorHandler;
+module.exports.durationRefreshToken = durationRefreshToken;
+module.exports.durationToken = durationToken;
+module.exports.corsOptions = corsOptions;
+module.exports.port = process.env.PORT || 3000;
