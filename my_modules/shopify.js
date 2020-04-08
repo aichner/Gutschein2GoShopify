@@ -1,23 +1,38 @@
-const express = require('express');
-const router = express.Router();
 const request = require('request');
 
-//const security = require('./securityRouter');
-
-router.get('/orders', /*security.jwtMW,*/ (req, res) => {
-    let apiKey = process.env.SHOPIFY_API_KEY;
-    let apiPass = process.env.SHOPIFY_API_PASS;
-    let shopname = 'gutschein2go';
-    let apiVersion = '2020-04';
-    let resource = 'orders';
-    request.get(`https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}/${resource}.json`, (error, response, body) => {
-        console.log(response);
-        if (error != null)
-            res.status(500).send(`Error receiving orders`);
-        else {
-            res.status(200).send(body);
-        }
+function getOrders() {
+    return new Promise((resolve, reject) => {
+        let apiKey = process.env.SHOPIFY_API_KEY;
+        let apiPass = process.env.SHOPIFY_API_PASS;
+        let shopname = 'gutschein2go';
+        let apiVersion = '2020-04';
+        let resource = 'orders';
+        request.get(`https://${apiKey}:${apiPass}@${shopname}.myshopify.com/admin/api/${apiVersion}/${resource}.json`, (error, response, body) => {
+            if (error != null) {
+                reject('Error receiving orders: ' + error);
+            } else {
+                resolve(body);
+            }
+        });
     });
-});
+}
 
-module.exports = router;
+/*
+function getOrders(customerID) {
+    return new Promise((resolve, reject) => {
+        getOrders().then((orders) => {
+            let customerOrders = [];
+            for(let order in orders.orders) {
+                if(order.customer.id == customerID) {
+                    customerOrders.push(order);
+                }
+            }
+            resolve(customerOrders);
+        }).catch((err) => {
+            reject(err);
+        });
+    });
+}
+*/
+
+module.exports.getOrders = getOrders;
