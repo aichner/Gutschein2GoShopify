@@ -46,7 +46,7 @@ async function drawSingleCouponBack(doc, coupon, position) {
     doc.fill(coupon.secondaryColor).stroke();
     doc.fontSize(20);
     doc.text('This is the backside of the coupon with order date: ' + coupon.orderDate, 10, yOffset + 20, { lineBreak: false });
-    await addQrCode(doc, 'tokenblablalba', doc.page.width - 150, yOffset + doc.page.height / 3 - 150);
+    await addQrCode(doc, coupon.qrToken, doc.page.width - 150, yOffset + doc.page.height / 3 - 150);
 }
 
 async function addQrCode(doc, token, x, y) {
@@ -57,8 +57,8 @@ async function addQrCode(doc, token, x, y) {
                 doc.image(img, x, y);
                 resolve();
             } else {
-                reject();
                 console.error(error + '\n status code: ' + response.statusCode);
+                reject();
             }
         });
     });
